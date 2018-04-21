@@ -3,8 +3,9 @@
 ## Содержание
 1. [Коротко о главном](#Коротко-о-главном)
 2. [Что имеем](#Что-имеем)
-3. [Структуры](#Структуры)
-4. [API-функции](#API-функции)
+3. [Секция импорта](#Секция-импорта)
+4. [Структуры](#Структуры)
+5. [API-функции](#api-функции)
 
 ## Коротко о главном
 Эта статья основана на коде **Томаша Грыштара** (Tomasz Grysztar) [[Ссылка на исходники](https://flatassembler.net/examples/screenshot.zip)] и написана исключительно в *образовательных целях*. Она объясняет работу ассемблерного кода, который создает снимки экрана в формате JPEG.
@@ -14,10 +15,34 @@
 Описание структур и API-функции преимущественно является переводом описаний с [MSDN](https://msdn.microsoft.com/).
 
 ## Что имеем
-1. **Описание используемых структур**
-    
-2. **Используемые API-функции**
-    
+
+## Секция импорта
+
+```ASM
+section '.rdata' data readable
+
+; импортируемые функции и библиотеки
+data import
+  library                           \
+    kernel32,       'KERNEL32.DLL', \
+    user32,         'USER32.DLL',   \
+    gdi32,          'GDI32.DLL',    \
+    gdiplus,        'GDIPLUS.DLL'
+
+  import  gdiplus,                                               \
+    GdiplusStartup,               'GdiplusStartup',              \
+    GdiplusShutdown,              'GdiplusShutdown',             \
+    GdipGetImageEncodersSize,     'GdipGetImageEncodersSize',    \
+    GdipGetImageEncoders,         'GdipGetImageEncoders',        \
+    GdipSaveImageToFile,          'GdipSaveImageToFile',         \
+    GdipDisposeImage,             'GdipDisposeImage',            \
+    GdipCreateBitmapFromHBITMAP,  'GdipCreateBitmapFromHBITMAP'
+
+  include 'api/kernel32.inc'
+  include 'api/user32.inc'
+  include 'api/gdi32.inc'
+end data
+```
 
 ## Структуры
 
