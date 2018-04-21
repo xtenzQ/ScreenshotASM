@@ -10,8 +10,6 @@
 ## Коротко о главном
 Эта статья основана на коде **Томаша Грыштара** (Tomasz Grysztar) [[Ссылка на исходники](https://flatassembler.net/examples/screenshot.zip)] и написана исключительно в *образовательных целях*. Она объясняет работу ассемблерного кода, который создает снимки экрана в формате JPEG.
 
-Все права на ассемблерный код, представленный в статье, принадлежат Томашу Грыштару.
-
 Описание структур и API-функции преимущественно является переводом описаний с [MSDN](https://msdn.microsoft.com/).
 
 ## Что имеем
@@ -152,7 +150,7 @@ SigMask | BYTE | Указатель на массив байтов, содерж
 API-функции, использованные в программе:
 - [GdiplusStartup](#gdiplusstartup)
 - [GdipGetImageEncodersSize](#gdipgetimageencoderssize)
-- VirtualAlloc
+- [VirtualAlloc](#virtualalloc)
 - GdipGetImageEncoders
 - VirtualFree
 - GetDC 
@@ -187,6 +185,13 @@ token [out] | ULONG_PTR token* | Указатель на ULONG_PTR, которы
 input [in] | const | GdiPlusStartupInput* | Указатель на структуру GdiplusStartupInput
 output [out] | GdiplusStartupOutput* | Указатель на структуру GdiplusStartupOutput
 
+Использование в коде:
+```ASM
+  invoke  GdiplusStartup, token, input, NULL
+  test    eax, eax
+  jnz     exit
+```
+
 ### GdipGetImageEncodersSize
 Функция GdipGetImageEncodersSize получает число доступных кодировщиков изображения и размер массива объектов типа ImageCodecInfo, который возвращает функция GetImageEncoders.
 
@@ -204,6 +209,13 @@ Status GetImageEncodersSize(
 -------- | --- | --------
 numEncoders [out]	| UINT*	| Указатель на UINT, который получает число доступных кодировщиков изображения
 size [out] | UINT* | Указатель на UINT, который получает размер массива объектов ImageCodecInfo (в байтах), возвращаемых функцией GetImageEncoders
+
+Использование в коде:
+```ASM
+  invoke  GdipGetImageEncodersSize, encoders_count, encoders_size
+  test    eax, eax
+  jnz     gdiplus_shutdown
+```
 
 ### VirtualAlloc
 С помощью данной функции есть возможность выделить или зарезервировать страницы виртуальной памяти. Между выделением и резервированием есть разница. При выделении физически выделяется память и естественно увеличивается файл подкачки. При резервировании этого не происходит. 
@@ -245,3 +257,10 @@ PAGE_EXECUTE_READWRITE | Исполнение, чтение и запись
 PAGE_GUARD | Сигнализация доступа к странице
 PAGE_NOACCESS | Запрещен любой вид доступа
 PAGE_NOCACHE | Отмена кэширования для страницы памяти
+
+Использование в коде:
+```ASM
+  invoke  VirtualAlloc, 0, [encoders_size], MEM_COMMIT, PAGE_READWRITE
+  test    eax, eax
+  jz      gdiplus_shutdown
+```
