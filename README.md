@@ -301,6 +301,7 @@ encoders [out] | ImageCodecInfo* | Указатель на буфер, кото�
 ### VirtualFree
 
 [[Описание на MSDN](https://msdn.microsoft.com/ru-ru/library/windows/desktop/aa366892(v=vs.85).aspx)]
+
 Функция VirtualFree освобождает выделенную память. 
 
 Синтаксис:
@@ -336,6 +337,8 @@ invoke  VirtualFree, ebx, 0, MEM_RELEASE
 
 ### GetDC
 
+[[Описание на MSDN](https://msdn.microsoft.com/ru-ru/library/windows/desktop/dd144871(v=vs.85).aspx)]
+
 Функция GetDC идентифицирует контекст устройства для CWnd клиентской области если успешно иначе, возвращаемое значение NULL.
 
 Синтаксис:
@@ -360,6 +363,8 @@ mov     esi, eax
 ```
 
 ### GetSystemMetrics
+
+[[Описание на MSDN](https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms724385(v=vs.85).aspx)]
 
 Функция GetSystemMetrics идентифицирует заданный системный показатель или настройку конфигурации системы.
 
@@ -386,6 +391,8 @@ mov     [screen_width], eax
 ```
 
 ### CreateCompatibleBitmap
+
+[[Описание на MSDN](https://msdn.microsoft.com/ru-ru/library/windows/desktop/dd183488(v=vs.85).aspx)]
 
 Функция CreateCompatibleBitmap создает точечный рисунок, совместимый с контекстом устройства.
 
@@ -416,6 +423,8 @@ mov     ebx, eax
 ```
 
 ### CreateCompatibleDC
+
+[[Описание на MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183489(v=vs.85).aspx)]
 
 Функция CreateCompatibleDC создает контекст устройства памяти, который является совместимым с устройством, определенным pDC.
 
