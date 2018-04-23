@@ -11,6 +11,8 @@
 
 Описание структур и API-функции преимущественно является переводом описаний с [MSDN](https://msdn.microsoft.com/).
 
+[Пост на **FlatAssembler.net**](https://board.flatassembler.net/topic.php?t=10427)
+
 ## Секция импорта
 
 ```ASM
@@ -154,8 +156,8 @@ API-функции, использованные в программе:
 - [GetSystemMetrics](#getsystemmetrics)
 - [CreateCompatibleBitmap](#createcompatiblebitmap)
 - [CreateCompatibleDC](#createcompatibledc)
-- SelectObject
-- BitBlt
+- [SelectObject](#selectobject)
+- [BitBlt](#bitblt)
 - GdipCreateBitmapFromHBITMAP
 - GdipSaveImageToFile
 - GdipDisposeImage
@@ -447,4 +449,75 @@ invoke  CreateCompatibleDC, esi
 test    eax, eax
 jz      delete_bitmap
 mov     edi, eax
+```
+
+### SelectObject
+
+[[Описание на MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162957(v=vs.85).aspx)]
+
+Функция SelectObject выбирает объект в указанном контексте устройства. Новый объект заменяет предыдущий объект того же типа.
+
+Синтаксис:
+```Cpp
+HGDIOBJ SelectObject(
+  _In_ HDC     hdc,
+  _In_ HGDIOBJ hgdiobj
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+hdc [in] | HDC | Указатель на контекст устройства
+hgdiobj [in] |	HGDIOBJ |	Указатель на объект, который должен быть выбран
+
+Использование в коде:
+```ASM
+invoke  SelectObject, edi, ebx
+test    eax, eax
+jz      delete_dc
+```
+
+### BitBlt
+
+[[Описание на MSDN](https://msdn.microsoft.com/ru-ru/library/windows/desktop/dd183370(v=vs.85).aspx)]
+
+Функция BitBlt копирует точечный рисунок от исходного контекста устройства до этого текущего контекста устройства.
+
+Синтаксис:
+
+```Cpp
+BOOL BitBlt(
+  _In_ HDC   hdcDest,
+  _In_ int   nXDest,
+  _In_ int   nYDest,
+  _In_ int   nWidth,
+  _In_ int   nHeight,
+  _In_ HDC   hdcSrc,
+  _In_ int   nXSrc,
+  _In_ int   nYSrc,
+  _In_ DWORD dwRop
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+hdcDest [in]	| HDC | Указатель на контекст конечного устройства
+nXDest [in]	| int | Определяет логическую x-координату левого верхнего угла прямоугольника адресата.
+nYDest [in]	| int | Определяет логическую y-координату левого верхнего угла прямоугольника адресата.
+nWidth [in]	| int | Определяет ширину (в логических модулях) прямоугольника адресата и исходного точечного рисунка.
+nHeight [in]	| int | Определяет высоту (в логических модулях) прямоугольника адресата и исходного точечного рисунка.
+hdcSrc [in]	| HDC | Указатель на объект HDC, который идентифицирует контекст устройства из которого точечный рисунок будет скопирован
+nXSrc [in]	| int | Определяет логическую x-координату левого верхнего угла исходного точечного рисунка
+nYSrc [in]	| int | Определяет логическую y-координату левого верхнего угла исходного точечного рисунка
+dwRop [in]	| DWORD | Определяет растровую операцию, которую нужно выполнить
+
+Использование в коде:
+```ASM
+invoke  BitBlt, edi, 0, 0, [screen_width], [screen_height], esi, 0, 0, SRCCOPY
+test    eax, eax
+jz      delete_dc
 ```
