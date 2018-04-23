@@ -148,12 +148,12 @@ API-функции, использованные в программе:
 - [GdiplusStartup](#gdiplusstartup)
 - [GdipGetImageEncodersSize](#gdipgetimageencoderssize)
 - [VirtualAlloc](#virtualalloc)
-- GdipGetImageEncoders
-- VirtualFree
-- GetDC 
-- GetSystemMetrics
-- CreateCompatibleBitmap
-- CreateCompatibleDC
+- [GetImageEncoders](#getimageencoders)
+- [VirtualFree](#virtualfree)
+- [GetDC](#getdc)
+- [GetSystemMetrics](#getsystemmetrics)
+- [CreateCompatibleBitmap](#createcompatiblebitmap)
+- [CreateCompatibleDC](#createcompatibledc)
 - SelectObject
 - BitBlt
 - GdipCreateBitmapFromHBITMAP
@@ -329,6 +329,113 @@ lpAddress | LPVOID | Базовый адрес
 MEM_RELEASE	| Высвобождение используемой памяти
 MEM_DECOMMIT	| Высвобождение зарезервированной памяти
 
+Использование в коде:
 ```ASM
 invoke  VirtualFree, ebx, 0, MEM_RELEASE
+```
+
+### GetDC
+
+Функция GetDC идентифицирует контекст устройства для CWnd клиентской области если успешно иначе, возвращаемое значение NULL.
+
+Синтаксис:
+```Cpp
+HDC GetDC(
+  _In_ HWND hWnd
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+hWnd | HWND | Дескриптор окна, чей контекст устройства должен быть извлечен
+
+Использование в коде:
+```ASM
+invoke  GetDC, HWND_DESKTOP
+test    eax, eax
+jz      gdiplus_shutdown
+mov     esi, eax
+```
+
+### GetSystemMetrics
+
+Функция GetSystemMetrics идентифицирует заданный системный показатель или настройку конфигурации системы.
+
+Синтаксис:
+
+```Cpp
+int WINAPI GetSystemMetrics(
+  _In_ int nIndex
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+nIndex | int | Идентификатор настройки
+
+Использование в коде:
+```ASM
+invoke  GetSystemMetrics, SM_CYSCREEN
+mov     [screen_height], eax
+invoke  GetSystemMetrics,SM_CXSCREEN
+mov     [screen_width], eax
+```
+
+### CreateCompatibleBitmap
+
+Функция CreateCompatibleBitmap создает точечный рисунок, совместимый с контекстом устройства.
+
+Синтаксис:
+
+```Cpp
+HBITMAP CreateCompatibleBitmap(
+  _In_ HDC hdc,
+  _In_ int nWidth,
+  _In_ int nHeight
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+hdc [in] | HDC | Дескриптор контекста устройства
+nWidth [in] | int | Ширина рисунка в пикселях
+nHeight [in] | int | Высота рисунка в пикселях
+
+Использование в коде:
+```ASM
+invoke  CreateCompatibleBitmap, esi, [screen_width], [screen_height]
+test    eax, eax
+jz      release_desktop_dc
+mov     ebx, eax
+```
+
+### CreateCompatibleDC
+
+Функция CreateCompatibleDC создает контекст устройства памяти, который является совместимым с устройством, определенным pDC.
+
+Синтаксис:
+```Cpp
+HDC CreateCompatibleDC(
+  _In_ HDC hdc
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+hdc [in] | HDC | Указатель на контекст устройства
+
+Использование в коде:
+```ASM
+invoke  CreateCompatibleDC, esi
+test    eax, eax
+jz      delete_bitmap
+mov     edi, eax
 ```
