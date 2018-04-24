@@ -158,13 +158,13 @@ API-функции, использованные в программе:
 - [CreateCompatibleDC](#createcompatibledc)
 - [SelectObject](#selectobject)
 - [BitBlt](#bitblt)
-- GdipCreateBitmapFromHBITMAP
-- GdipSaveImageToFile
-- GdipDisposeImage
-- DeleteObject
-- ReleaseDC
-- GdiplusShutdown
-- ExitProcess
+- [GdipCreateBitmapFromHBITMAP](#gdipcreatebitmapfromhbitmap)
+- [GdipSaveImageToFile](#gdipsaveimagetofile)
+- [GdipDisposeImage](#gdipdisposeimage)
+- [DeleteObject](#deleteobject)
+- [ReleaseDC](#releasedc)
+- [GdiplusShutdown](#gdiplusshutdown)
+- [ExitProcess](#exitprocess)
 
 ### GdiPlusStartup
 [[Описание на MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/ms534077(v=vs.85).aspx)]
@@ -520,4 +520,188 @@ dwRop [in]	| DWORD | Определяет растровую операцию, �
 invoke  BitBlt, edi, 0, 0, [screen_width], [screen_height], esi, 0, 0, SRCCOPY
 test    eax, eax
 jz      delete_dc
+```
+
+### GdipCreateBitmapFromHBITMAP
+
+[[Описание на MSDN](https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms533971(v=vs.85).aspx)]
+
+Функция GdipCreateBitmapFromHBITMAP создает точечное изображение на основе дескриптора GDI и дескриптора палитры GDI.
+
+Синтаксис:
+
+```Cpp
+GpStatus WINGDIPAPI GdipCreateBitmapFromHBITMAP(
+    HBITMAP hbm,
+    HPALETTE hpal,
+    GpBitmap** bitmap
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+hbm [in] | HBITMAP | Дескриптор точечного изображения
+hgdiobj [in] | HPALETTE | Дескриптор палитры GDI
+bitmap [out] | GpBitmap | Указатель на переменную DWORD, которая получает указатель на объект bitmap
+
+Использование в коде:
+```ASM
+invoke  GdipCreateBitmapFromHBITMAP, ebx, NULL, gdip_bitmap
+test    eax, eax
+jnz     delete_dc
+```
+
+### GdipSaveImageToFile
+
+[[Описание на MSDN](https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms534041(v=vs.85).aspx)]
+
+Функция GdipSaveImageToFile сохраняет изображение в файл.
+
+Синтаксис:
+
+```Cpp
+GpStatus WINGDIPAPI GdipSaveImageToFile(
+    GpImage *image,
+    GDIPCONST WCHAR* filename,
+    GDIPCONST CLSID* clsidEncoder,
+    GDIPCONST EncoderParameters* encoderParams
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+image [in] | GpImage | Указатель на изображение
+filename [in] | GDIPCONST | Указатель на строку unicode, которая указывает имя пути для сохраненного изображения
+clsidEncoder [in] | GDIPCONST | Указатель на CLSID, который указывает кодировщик, который будет использоваться для сохранения изображения
+encoderParams [in] | GDIPCONST | Указатель на структуру EncoderParameters, которая содержит параметры, используемые кодировщиком
+
+Использование в коде:
+```ASM
+invoke  GdipSaveImageToFile, [gdip_bitmap], file_name, encoder_clsid, NULL
+```
+
+### GdipDisposeImage
+
+[[Описание на MSDN](https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms534041(v=vs.85).aspx)]
+
+Функция GdipDisposeImage удаляет указанное изображение.
+
+Синтаксис:
+```Cpp
+GpStatus WINGDIPAPI GdipDisposeImage(
+    GpImage *image
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+image [in] | GpImage | Указатель на изображение
+
+Использование в коде:
+```ASM
+invoke  GdipDisposeImage, [gdip_bitmap]
+```
+
+### DeleteObject
+
+[[Описание на MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183539(v=vs.85).aspx)]
+
+Функция DeleteObject удаляет перо, кисть, шрифт, растровое изображение, область или палитру, освобождая все системные ресурсы, связанные с объектом. После удаления объекта указанный дескриптор более недействителен.
+
+Синтаксис:
+```Cpp
+BOOL DeleteObject(
+  _In_ HGDIOBJ hObject
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+hObject [in] | HGDIOBJ | Дескриптор объекта
+
+Использование в коде:
+```ASM
+invoke  DeleteObject, edi
+```
+
+### ReleaseDC
+
+[[Описание на MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162920(v=vs.85).aspx)]
+
+Функция ReleaseDC освобождает контекст устройства (DC) для его использования другими приложениями.
+
+Синтаксис:
+```Cpp
+int ReleaseDC(
+  _In_ HWND hWnd,
+  _In_ HDC  hDC
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+hWnd [in] | HWND | Дескриптор окна, чей контекст должен быть высвобожден
+hDC [in] | HDC | Дескриптор контекста устройства, который надо высвободить
+
+Использование в коде:
+```ASM
+invoke  ReleaseDC, HWND_DESKTOP, esi
+```
+
+### GdiplusShutdown
+
+[[Описание на MSDN](https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms534076(v=vs.85).aspx)]
+
+Функция GdiplusShutdown очищает ресурсы, используемые Windows GDI+. 
+
+Синтаксис:
+```Cpp
+void GdiplusShutdown(
+  __in  ULONG_PTR token
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+token [in] | ULONG_PTR | Токен, возвращенный предыдущим вызовом GdiplusStartup
+
+Использование в коде:
+```ASM
+invoke  GdiplusShutdown, [token]
+```
+
+### ExitProcess
+
+[[Описание на MSDN](https://msdn.microsoft.com/ru-ru/ms682658)]
+
+Функция ExitProcess заканчивает работу процесса и всех его потоков. 
+
+Синтаксис:
+```Cpp
+VOID ExitProcess(
+  UINT uExitCode	
+);
+```
+
+Аргументы функции:
+
+Название | Тип | Описание
+-------- | --- | --------
+uExitCode [in] | UINT | Определяет код выхода для процесса, и для всех потоков, которые завершают работу в результате вызова этой функци
+
+Использование в коде:
+```ASM
+invoke  ExitProcess, 0
 ```
